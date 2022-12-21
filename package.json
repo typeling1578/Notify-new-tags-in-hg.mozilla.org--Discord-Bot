@@ -1,0 +1,14 @@
+{
+  "name": "notify-new-tags-in-hg.mozilla.org",
+  "license": "MPL2.0",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-html-parser": "^5.4.2-0"
+  },
+  "engines": {
+		"node": ">=19.0.0"
+	}
+}

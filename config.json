@@ -1,0 +1,15 @@
+{
+    "check_repos": [
+        "mozilla-unified",
+        "releases/mozilla-esr102",
+        "releases/mozilla-release",
+        "releases/mozilla-beta"
+    ],
+    "webhook_all": "<Please paste Webhook URL>",
+    "webhooks": {
+        "mozilla-unified": "<Please paste Webhook URL>",
+        "releases/mozilla-esr102": "<Please paste Webhook URL>",
+        "releases/mozilla-release": "<Please paste Webhook URL>",
+        "releases/mozilla-beta": "<Please paste Webhook URL>"
+    }
+}
