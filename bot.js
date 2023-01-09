@@ -43,13 +43,17 @@ async function post_discord(message, webhook) {
     let body = {
         "content": message
     }
-    await fetch(webhook, {
+    let result = await fetch(webhook, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
     });
+    if (result.status !== 200 && result.status !== 204) {
+        console.log(await result.text());
+        throw `${result.status} ${result.statusText}`;
+    }
 }
 
 async function init_sync_hg_mozilla_org(path) {
@@ -91,13 +95,13 @@ async function sync_hg_mozilla_org(path) {
         if (!known_tags[path].includes(tag)) {
             console.log(`New tag: ${tag} (${path})`);
             if (config["webhooks"] && config["webhooks"][path]) {
-                post_discord(tag, config["webhooks"][path]);
+                await post_discord(tag, config["webhooks"][path]);
             }
             known_tags[path].push(tag);
         }
         if (!known_tags_all.includes(tag)) {
             if (config["webhook_all"]) {
-                post_discord(tag, config["webhook_all"]);
+                await post_discord(tag, config["webhook_all"]);
             }
             known_tags_all.push(tag);
         }
