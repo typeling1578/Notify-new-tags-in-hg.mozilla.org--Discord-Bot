@@ -1,6 +1,6 @@
 const HTMLParser = require('node-html-parser');
-//const fetch = require("node-fetch");
 const fs = require("fs");
+require('dotenv').config();
 
 let known_tags = {};
 let known_tags_all = [];
