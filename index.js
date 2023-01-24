@@ -96,15 +96,16 @@ async function sync_hg_mozilla_org(path) {
             console.log(`New tag: ${tag} (${path})`);
             if (config["webhooks"] && config["webhooks"][path]) {
                 await post_discord(tag, config["webhooks"][path]);
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
             known_tags[path].push(tag);
         }
         if (!known_tags_all.includes(tag)) {
             if (config["webhook_all"]) {
                 await post_discord(tag, config["webhook_all"]);
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
             known_tags_all.push(tag);
         }
-        await new Promise(resolve => setTimeout(resolve, 200));
     }
 }
