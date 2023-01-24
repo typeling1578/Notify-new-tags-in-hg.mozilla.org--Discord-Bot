@@ -21,6 +21,15 @@ let config;
 
     console.log(`config\n${config_file}`);
 
+    if (config.receive_ping_server_enabled) {
+        const http = require('http');
+        http.createServer(function(request, response)
+        {
+            response.writeHead(200, {'Content-Type': 'text/plain'});
+            response.end('pong');
+        }).listen(8080);
+    }    
+
     let check_repos = config["check_repos"];
 
     for (let check_repo of check_repos) {

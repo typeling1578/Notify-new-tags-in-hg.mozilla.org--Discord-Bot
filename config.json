@@ -11,5 +11,6 @@
         "releases/mozilla-esr102": "<Please paste Webhook URL>",
         "releases/mozilla-release": "<Please paste Webhook URL>",
         "releases/mozilla-beta": "<Please paste Webhook URL>"
-    }
+    },
+    "receive_ping_server_enabled": false
 }
