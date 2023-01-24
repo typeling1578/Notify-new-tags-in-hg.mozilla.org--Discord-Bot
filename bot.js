@@ -105,5 +105,6 @@ async function sync_hg_mozilla_org(path) {
             }
             known_tags_all.push(tag);
         }
+        await new Promise(resolve => setTimeout(resolve, 200));
     }
 }
