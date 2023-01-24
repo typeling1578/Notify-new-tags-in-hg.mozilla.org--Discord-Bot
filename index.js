@@ -6,12 +6,17 @@ let known_tags_all = [];
 let config;
 
 (async() => {
-    let config_file = await new Promise((resolve, reject) => {
-        fs.readFile("config.json", "utf-8", function(err, data) {
-            if (err) { reject(err) }
-            resolve(data);
+    let config_file;
+    if (process.env.NOTIFY_NEW_TAGS_IN_HG_MOZILLA_ORG_DISCORD_BOT_CONFIG) {
+        config_file = process.env.NOTIFY_NEW_TAGS_IN_HG_MOZILLA_ORG_DISCORD_BOT_CONFIG;
+    } else {
+        config_file = await new Promise((resolve, reject) => {
+            fs.readFile("config.json", "utf-8", function(err, data) {
+                if (err) { reject(err) }
+                resolve(data);
+            });
         });
-    });
+    }
     config = JSON.parse(config_file);
 
     console.log(`config\n${config_file}`);
