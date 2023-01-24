@@ -6,7 +6,6 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "dotenv": "^16.0.3",
     "node-html-parser": "^5.4.2-0"
   },
   "engines": {

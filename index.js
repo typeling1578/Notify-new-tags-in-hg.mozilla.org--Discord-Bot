@@ -1,6 +1,5 @@
 const HTMLParser = require('node-html-parser');
 const fs = require("fs");
-require('dotenv').config();
 
 let known_tags = {};
 let known_tags_all = [];
