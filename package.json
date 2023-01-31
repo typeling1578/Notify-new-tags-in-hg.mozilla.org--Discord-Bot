@@ -1,9 +1,9 @@
 {
   "name": "notify-new-tags-in-hg.mozilla.org",
   "license": "MPL2.0",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.mjs"
   },
   "dependencies": {
     "node-html-parser": "^5.4.2-0"

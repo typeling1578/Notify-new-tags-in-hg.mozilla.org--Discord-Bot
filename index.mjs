@@ -1,5 +1,6 @@
-const HTMLParser = require('node-html-parser');
-const fs = require("fs");
+import HTMLParser from "node-html-parser"
+import fs from "fs";
+import http from "http"
 
 let known_tags = {};
 let known_tags_all = [];
@@ -22,7 +23,6 @@ let config;
     console.log(`config\n${config_file}`);
 
     if (config.receive_ping_server_enabled) {
-        const http = require('http');
         http.createServer(function(request, response)
         {
             response.writeHead(200, {'Content-Type': 'text/plain'});
