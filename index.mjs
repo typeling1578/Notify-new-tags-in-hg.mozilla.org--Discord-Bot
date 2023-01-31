@@ -53,11 +53,29 @@ let config;
     }, 60000);
 })();
 
+function httpRequest(url, options) {
+    return new Promise(async(resolve, reject) => {
+        let controller = new AbortController();
+        let timeout = setTimeout(() => {
+            controller.abort();
+        }, 10000);
+        fetch(url, Object.assign({ signal: controller.signal }, options))
+            .then(result => {
+                clearTimeout(timeout);
+                resolve(result);
+            })
+            .catch(error => {
+                clearTimeout(timeout);
+                reject(error);
+            });
+    });
+}
+
 async function post_discord(message, webhook) {
     let body = {
         "content": message
     }
-    let result = await fetch(webhook, {
+    let result = await httpRequest(webhook, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -73,7 +91,7 @@ async function post_discord(message, webhook) {
 async function init_sync_hg_mozilla_org(path) {
     console.log(`Initial synchronizing "${path}"`);
     const url = "https://hg.mozilla.org/" + path + "/tags";
-    const result = await fetch(url);
+    const result = await httpRequest(url);
     if (result.status !== 200) {
         throw `${result.status} ${result.statusText}`;
     }
@@ -93,7 +111,7 @@ async function init_sync_hg_mozilla_org(path) {
 async function sync_hg_mozilla_org(path) {
     console.log(`Synchronizing "${path}"`);
     const url = "https://hg.mozilla.org/" + path + "/tags";
-    const result = await fetch(url);
+    const result = await httpRequest(url);
     if (result.status !== 200) {
         throw `${result.status} ${result.statusText}`;
     }
