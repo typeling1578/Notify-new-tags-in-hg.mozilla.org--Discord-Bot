@@ -1,4 +1,5 @@
 import HTMLParser from "node-html-parser"
+import fetch from "node-fetch";
 import fs from "fs";
 import http from "http"
 
