@@ -55,6 +55,9 @@ let config;
 
 function httpRequest(url, options) {
     return new Promise(async(resolve, reject) => {
+        setTimeout(() => {
+            reject("abort");
+        }, 20000);
         let controller = new AbortController();
         let timeout = setTimeout(() => {
             controller.abort();
