@@ -1,7 +1,7 @@
-import HTMLParser from "node-html-parser"
-import fetch from "node-fetch";
+import HTMLParser from "node-html-parser";
 import fs from "fs";
-import http from "http"
+import http from "http";
+import got from "got";
 
 let known_tags = {};
 let known_tags_all = [];
@@ -54,51 +54,30 @@ let config;
 })();
 
 function httpRequest(url, options) {
-    return new Promise(async(resolve, reject) => {
-        setTimeout(() => {
-            reject("abort");
-        }, 20000);
-        let controller = new AbortController();
-        let timeout = setTimeout(() => {
-            controller.abort();
-        }, 10000);
-        fetch(url, Object.assign({ signal: controller.signal }, options))
-            .then(result => {
-                clearTimeout(timeout);
-                resolve(result);
-            })
-            .catch(error => {
-                clearTimeout(timeout);
-                reject(error);
-            });
-    });
+    return got(url, Object.assign({
+        timeout: {
+            request: 10000
+        }
+    }, options)).text();
 }
 
 async function post_discord(message, webhook) {
     let body = {
         "content": message
     }
-    let result = await httpRequest(webhook, {
+    await httpRequest(webhook, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
     });
-    if (result.status !== 200 && result.status !== 204) {
-        console.log(await result.text());
-        throw `${result.status} ${result.statusText}`;
-    }
 }
 
 async function init_sync_hg_mozilla_org(path) {
     console.log(`Initial synchronizing "${path}"`);
     const url = "https://hg.mozilla.org/" + path + "/tags";
-    const result = await httpRequest(url);
-    if (result.status !== 200) {
-        throw `${result.status} ${result.statusText}`;
-    }
-    const result_text = await result.text();
+    const result_text = await httpRequest(url);
     const root = HTMLParser.parse(result_text);
     const elems = root.querySelectorAll(".list");
     known_tags[path] = []
@@ -114,11 +93,7 @@ async function init_sync_hg_mozilla_org(path) {
 async function sync_hg_mozilla_org(path) {
     console.log(`Synchronizing "${path}"`);
     const url = "https://hg.mozilla.org/" + path + "/tags";
-    const result = await httpRequest(url);
-    if (result.status !== 200) {
-        throw `${result.status} ${result.statusText}`;
-    }
-    const result_text = await result.text();
+    const result_text = await httpRequest(url);
     const root = HTMLParser.parse(result_text);
     const elems = root.querySelectorAll(".list");
     let found_tags = []
