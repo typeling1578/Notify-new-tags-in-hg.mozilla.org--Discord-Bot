@@ -6,7 +6,7 @@
     "start": "node index.mjs"
   },
   "dependencies": {
-    "got": "^12.5.3",
+    "got": "^12.6.0",
     "node-html-parser": "^6.1.5"
   },
   "engines": {
