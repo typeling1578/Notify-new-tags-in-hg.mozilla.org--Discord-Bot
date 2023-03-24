@@ -12,5 +12,7 @@
         "releases/mozilla-release": "<Please paste Webhook URL>",
         "releases/mozilla-beta": "<Please paste Webhook URL>"
     },
+    "mastodon_access_token": "<Please paste mastodon access_token>",
+    "mastodon_endpoint": "<Please paste mastodon api endpoint>",
     "receive_ping_server_enabled": false
 }

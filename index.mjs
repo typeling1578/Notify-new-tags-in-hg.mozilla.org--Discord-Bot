@@ -2,10 +2,13 @@ import HTMLParser from "node-html-parser";
 import fs from "fs";
 import http from "http";
 import got from "got";
+import mastodon from "mastodon";
 
 let known_tags = {};
 let known_tags_all = [];
+let known_tags_mastodon = {};
 let config;
+let mastodon_api_client = null;
 
 (async() => {
     let config_file;
@@ -74,19 +77,37 @@ async function post_discord(message, webhook) {
     });
 }
 
+async function post_mastodon(message) {
+    if (!mastodon_api_client) {
+        mastodon_api_client = new mastodon({
+            access_token: config["mastodon_access_token"],
+            timeout: 60 * 1000,
+            api_url: config["mastodon_endpoint"],
+        });
+    }
+    await new Promise((resolve, reject) => {
+        mastodon_api_client.post("statuses", { status: message }, function(err, data, res) {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+}
+
 async function init_sync_hg_mozilla_org(path) {
     console.log(`Initial synchronizing "${path}"`);
     const url = "https://hg.mozilla.org/" + path + "/tags";
     const result_text = await httpRequest(url);
     const root = HTMLParser.parse(result_text);
     const elems = root.querySelectorAll(".list");
-    known_tags[path] = []
+    known_tags[path] = [];
+    known_tags_mastodon[path] = [];
     for (let elem of elems) {
         let tag = elem.textContent;
         known_tags[path].push(tag);
         if (!known_tags_all.includes(tag)) {
             known_tags_all.push(tag);
         }
+        known_tags_mastodon[path].push(tag);
     }
 }
 
@@ -102,20 +123,48 @@ async function sync_hg_mozilla_org(path) {
     }
     found_tags = found_tags.reverse();
     for (let tag of found_tags) {
-        if (!known_tags[path].includes(tag)) {
-            console.log(`New tag: ${tag} (${path})`);
-            if (config["webhooks"] && config["webhooks"][path]) {
-                await post_discord(tag, config["webhooks"][path]);
-                await new Promise(resolve => setTimeout(resolve, 200));
+        let discord = (async () => {
+            // Discord
+            if (!known_tags[path].includes(tag)) {
+                console.log(`New tag (separate discord): ${tag} (${path})`);
+                if (config["webhooks"] && config["webhooks"][path]) {
+                    await post_discord(tag, config["webhooks"][path]);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                known_tags[path].push(tag);
             }
-            known_tags[path].push(tag);
-        }
-        if (!known_tags_all.includes(tag)) {
-            if (config["webhook_all"]) {
-                await post_discord(tag, config["webhook_all"]);
-                await new Promise(resolve => setTimeout(resolve, 200));
+            if (!known_tags_all.includes(tag)) {
+                console.log(`New tag (all discord): ${tag} (${path})`);
+                if (config["webhook_all"]) {
+                    await post_discord(tag, config["webhook_all"]);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                known_tags_all.push(tag);
             }
-            known_tags_all.push(tag);
+        })();
+        let mastodon = (async () => {
+            // Mastodon
+            if (!known_tags_mastodon[path].includes(tag)) {
+                console.log(`New tag (all mastodon): ${tag} (${path})`);
+                if (config["mastodon_access_token"] && config["mastodon_endpoint"]) {
+                    await post_mastodon(`${tag} (${path})`);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                known_tags_mastodon[path].push(tag);
+            }
+        })();
+
+        let errors = [];
+        try {
+            await discord;
+        } catch (e) {
+            errors.push(e);
         }
+        try {
+            await mastodon;
+        } catch (e) {
+            errors.push(e);
+        }
+        if (errors.length > 0) throw errors;
     }
 }
