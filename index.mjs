@@ -6,7 +6,7 @@ import mastodon from "mastodon";
 
 let known_tags = {};
 let known_tags_all = [];
-let known_tags_mastodon = {};
+let known_tags_all_mastodon = [];
 let config;
 let mastodon_api_client = null;
 
@@ -100,14 +100,15 @@ async function init_sync_hg_mozilla_org(path) {
     const root = HTMLParser.parse(result_text);
     const elems = root.querySelectorAll(".list");
     known_tags[path] = [];
-    known_tags_mastodon[path] = [];
     for (let elem of elems) {
         let tag = elem.textContent;
         known_tags[path].push(tag);
         if (!known_tags_all.includes(tag)) {
             known_tags_all.push(tag);
         }
-        known_tags_mastodon[path].push(tag);
+        if (!known_tags_all_mastodon.includes(tag)) {
+            known_tags_all_mastodon.push(tag);
+        }
     }
 }
 
@@ -144,13 +145,13 @@ async function sync_hg_mozilla_org(path) {
         })();
         let mastodon = (async () => {
             // Mastodon
-            if (!known_tags_mastodon[path].includes(tag)) {
+            if (!known_tags_all_mastodon.includes(tag)) {
                 console.log(`New tag (all mastodon): ${tag} (${path})`);
                 if (config["mastodon_access_token"] && config["mastodon_endpoint"]) {
                     await post_mastodon(`${tag} (${path})`);
                     await new Promise(resolve => setTimeout(resolve, 200));
                 }
-                known_tags_mastodon[path].push(tag);
+                known_tags_all_mastodon.push(tag);
             }
         })();
 
