@@ -31,7 +31,7 @@ let mastodon_api_client = null;
         {
             response.writeHead(200, {'Content-Type': 'text/plain'});
             response.end('pong');
-        }).listen(8080);
+        }).listen(Number(process.env.PORT || 8080));
     }    
 
     let check_repos = config["check_repos"];
