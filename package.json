@@ -8,7 +8,7 @@
   "dependencies": {
     "got": "^14.0.0",
     "mastodon": "^1.2.2",
-    "node-html-parser": "^6.1.11"
+    "node-html-parser": "^6.1.12"
   },
   "engines": {
     "node": ">=19.0.0"
