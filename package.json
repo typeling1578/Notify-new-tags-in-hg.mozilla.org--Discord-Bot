@@ -6,7 +6,7 @@
     "start": "node index.mjs"
   },
   "dependencies": {
-    "got": "^14.4.2",
+    "got": "^14.4.3",
     "mastodon": "^1.2.2",
     "node-html-parser": "^6.1.13"
   },
